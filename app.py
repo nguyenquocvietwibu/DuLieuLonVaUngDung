@@ -3,6 +3,8 @@ from pymongo import MongoClient
 
 # Hello World
 # Kết nối tới MongoDB local (thông qua Compass)
+# làm bài tập với MongoDB và Streamlit
+st.title("Hello World! 🌍")
 MONGO_URI = "mongodb://localhost:27017"  # Nếu dùng Compass local
 client = MongoClient(MONGO_URI)
 
