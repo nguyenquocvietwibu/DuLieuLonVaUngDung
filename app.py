@@ -1,6 +1,7 @@
 import streamlit as st
 from pymongo import MongoClient
 
+# Hello World
 # Kết nối tới MongoDB local (thông qua Compass)
 MONGO_URI = "mongodb://localhost:27017"  # Nếu dùng Compass local
 client = MongoClient(MONGO_URI)
