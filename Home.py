@@ -22,9 +22,9 @@ for title, collection_name in collections.items():
     collection = db[collection_name]
     data = list(collection.find({}))
     
-    # Loại bỏ _id nếu cần
-    for item in data:
-        item.pop("_id", None)
+    # # Loại bỏ _id nếu cần
+    # for item in data:
+    #     item.pop("_id", None)
 
     df = pd.DataFrame(data)
 
