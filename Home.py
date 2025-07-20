@@ -2,6 +2,8 @@ import streamlit as st
 from pymongo import MongoClient
 import pandas as pd
 
+#streamlit run home.py
+
 st.set_page_config(page_title="Trang chủ", layout="wide")
 st.title("Trang chủ – Tổng quan dữ liệu MongoDB")
 
@@ -14,17 +16,17 @@ collections = {
     "Nhân viên": "nhan_vien",
     "Dự án": "du_an",
     "Phòng ban": "phong_ban",
-    "Dự án và Nhân viên": "du_an_va_nhan_vien"
+    "Nhân viên và dự án": "nhan_vien_va_du_an"
 }
 
 # Hiển thị từng collection trong expander
-for title, collection_name in collections.items():
-    collection = db[collection_name]
+for title, collection in collections.items():
+    collection = db[collection]
     data = list(collection.find({}))
     
-    # # Loại bỏ _id nếu cần
-    # for item in data:
-    #     item.pop("_id", None)
+    # Loại bỏ _id nếu cần
+    for item in data:
+        item.pop("_id", None)
 
     df = pd.DataFrame(data)
 
