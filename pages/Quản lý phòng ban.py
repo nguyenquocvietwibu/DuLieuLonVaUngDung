@@ -12,7 +12,7 @@ st.title("📁 Quản lý Phòng ban")
 
 # Hàm load phòng ban
 def get_phong_ban():
-    data = list(col_phong_ban.find({}, {"_id": 0, "ma": 1, "ten": 1}))
+    data = list(col_phong_ban.find({}, {"_id": 0, "ma": 1, "ten": 1}).sort("ma", 1))
     return pd.DataFrame(data)
 
 # -----------------------
@@ -35,7 +35,7 @@ with st.form("form_them"):
 # 👉 SỬA PHÒNG BAN
 # -----------------------
 st.subheader("✏️ Sửa phòng ban")
-phong_ban_list = list(col_phong_ban.find({}, {"_id": 0, "ma": 1, "ten": 1}))
+phong_ban_list = list(col_phong_ban.find({}, {"_id": 0, "ma": 1, "ten": 1}).sort("ma", 1))
 if phong_ban_list:
     chon_pb = st.selectbox(
         "Chọn phòng ban cần sửa",
@@ -79,7 +79,7 @@ with st.expander("📋 Danh sách phòng ban", expanded=True):
         st.dataframe(df, hide_index=True)
 
         # 👉 Cho chọn phòng ban để xem danh sách nhân viên
-        ten_pb_chon = st.selectbox("Chọn phòng ban để xem nhân viên", df["Tên phòng ban"].tolist())
+        ten_pb_chon = st.selectbox("Chọn phòng ban để xem danh sách nhân viên", df["Tên phòng ban"].tolist())
 
         # 👉 Lấy mã phòng ban tương ứng
         ma_pb = df[df["Tên phòng ban"] == ten_pb_chon]["Mã phòng ban"].values[0]
