@@ -16,7 +16,7 @@ def XoaNhanVien(ma_nhan_vien_muon_xoa):
     st.success("Đã xóa nhân viên.")
     # st.rerun()
 
-def ThemNhanVien(du_lieu_nhan_vien, du_lieu_cac_du_an_tham_gia):
+def ThemNhanVienVaDuAnThamGia(du_lieu_nhan_vien, du_lieu_cac_du_an_tham_gia):
     if collection_nhan_vien.find_one({"ma": du_lieu_nhan_vien["ma"]}):
         st.warning("⚠️ Mã nhân viên đã tồn tại. Vui lòng nhập mã khác.")
         return
@@ -157,7 +157,7 @@ with st.form("form_nhan_vien"):
         ma_du_an_da_chon = [cac_lua_chon_du_an[ten] for ten in hop_nhieu_lua_chon_du_an]
 
         if che_do_chon == "Thêm":
-            ThemNhanVien(du_lieu_nv, ma_du_an_da_chon)
+            ThemNhanVienVaDuAnThamGia(du_lieu_nv, ma_du_an_da_chon)
         else:
             SuaNhanVien(du_lieu_nv, ma_du_an_da_chon)
             
