@@ -57,14 +57,14 @@ def LayNhanVienDF():
                 "from": "nhan_vien_va_du_an",
                 "localField": "ma",
                 "foreignField": "ma_nhan_vien",
-                "as": "du_annh_sach_nhan_vien_va_du_an_tham_gia",
+                "as": "danh_sach_nhan_vien_va_du_an_tham_gia",
             }
         },
         # Nối với bảng du_an để lấy tên
         {
             "$lookup": {
                 "from": "du_an",
-                "localField": "du_annh_sach_nhan_vien_va_du_an_tham_gia.ma_du_an",
+                "localField": "danh_sach_nhan_vien_va_du_an_tham_gia.ma_du_an",
                 "foreignField": "ma",
                 "as": "du_annh_sach_du_an_tham_gia",
             }
@@ -90,8 +90,8 @@ def LayNhanVienDF():
 
 st.title("Quản lý Nhân viên")
 
-# du_annh sách nhân viên
-st.subheader("📋 du_annh sách nhân viên")
+# Danh sách nhân viên
+st.subheader("📋 Danh sách thông tin nhân viên")
 
 df = LayNhanVienDF()
 st.dataframe(df)
