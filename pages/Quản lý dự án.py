@@ -1,53 +1,60 @@
+# du_an.py
 import streamlit as st
 from pymongo import MongoClient
 import pandas as pd
 
-# Chạy: python -m streamlit run du_an.py
-
-# Kết nối tới MongoDB
+# Kết nối MongoDB
 client = MongoClient("mongodb://localhost:27017")
 db = client["emp"]
-du_an = db["du_an"]
+collection_du_an = db["du_an"]
 
-st.title("Quản lý Dự Án")
+st.title("Quản lý Dự án")
 
 # --- Hiển thị danh sách dự án ---
-st.subheader("Danh sách dự án")
-duAn = pd.DataFrame(list(du_an.find()))
-if not duAn.empty:
-    st.dataframe(duAn)
+st.subheader("\U0001F4C4 Danh sách dự án")
+docs = list(collection_du_an.find({}, {"_id": 0}))
+if docs:
+    df = pd.DataFrame(docs)
+    st.dataframe(df)
 else:
     st.info("Chưa có dự án nào trong cơ sở dữ liệu.")
 
-# --- Thêm dự án ---
-st.subheader("Thêm dự án mới")
-new_name = st.text_input("Tên dự án")
-if st.button("Thêm dự án"):
-    if new_name:
-        max_id_doc = du_an.find_one(sort=[("_id", -1)])
-        next_id = (max_id_doc["_id"] + 1) if max_id_doc else 1
-        du_an.insert_one({"_id": next_id, "ten": new_name})
-        st.success(f"Đã thêm dự án với _id={next_id}")
-    else:
-        st.error("Vui lòng nhập tên dự án")
+# --- Thêm hoặc Sửa dự án ---
+st.subheader("✍️ Thêm / Sửa dự án")
+che_do = st.radio("Chọn chế độ", ["Thêm", "Sửa"], horizontal=True)
 
-# --- Cập nhật tên dự án ---
-st.subheader("Sửa tên dự án")
-update_id = st.number_input("Chọn _id", min_value=1, step=1)
-updated_name = st.text_input("Tên mới")
-if st.button("Cập nhật dự án"):
-    result = du_an.update_one({"_id": update_id}, {"$set": {"ten": updated_name}})
-    if result.matched_count:
-        st.success(f"Đã cập nhật dự án _id={update_id}")
+if che_do == "Sửa":
+    ds_ma = [doc["ma"] for doc in docs]
+    chon_ma = st.selectbox("Chọn mã dự án để sửa", ds_ma)
+    doc = collection_du_an.find_one({"ma": chon_ma}, {"_id": 0})
+    ten = st.text_input("Tên mới", value=doc.get("ten", ""))
+else:
+    chon_ma = st.number_input("Mã dự án", min_value=1, step=1)
+    ten = st.text_input("Tên dự án")
+
+if st.button("\U0001F4BE Lưu"):
+    if not ten:
+        st.warning("⚠️ Vui lòng nhập tên dự án.")
     else:
-        st.error(f"Không tìm thấy dự án với _id={update_id}")
+        if che_do == "Thêm":
+            if collection_du_an.find_one({"ma": chon_ma}):
+                st.warning("Mã đã tồn tại.")
+            else:
+                collection_du_an.insert_one({"ma": chon_ma, "ten": ten})
+                st.success("Đã thêm dự án mới.")
+        else:
+            result = collection_du_an.update_one({"ma": chon_ma}, {"$set": {"ten": ten}})
+            if result.matched_count:
+                st.success("Đã cập nhật tên dự án.")
+            else:
+                st.error("Không tìm thấy mã dự án.")
 
 # --- Xóa dự án ---
-st.subheader("Xóa dự án")
-delete_id = st.number_input("Chọn _id để xóa", min_value=1, step=1)
-if st.button("Xóa dự án"):
-    result = du_an.delete_one({"_id": delete_id})
+st.subheader("\U0001F5D1️ Xóa dự án")
+ma_can_xoa = st.selectbox("Chọn mã dự án để xóa", [doc["ma"] for doc in docs])
+if st.button("Xóa"):
+    result = collection_du_an.delete_one({"ma": ma_can_xoa})
     if result.deleted_count:
-        st.success(f"Đã xóa dự án _id={delete_id}")
+        st.success("Đã xóa dự án.")
     else:
-        st.error(f"Không tìm thấy dự án với _id={delete_id}")
+        st.error("Không tìm thấy mã dự án.")
