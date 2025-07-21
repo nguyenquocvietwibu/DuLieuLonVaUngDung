@@ -2,11 +2,14 @@
 import streamlit as st
 from pymongo import MongoClient
 import pandas as pd
+# Chạy: python -m streamlit run du_an.py
 
 # Kết nối MongoDB
 client = MongoClient("mongodb://localhost:27017")
 db = client["emp"]
 collection_du_an = db["du_an"]
+collection_nv = db["nhan_vien"]
+collection_da_nv = db["du_an_va_nhan_vien"]
 
 st.title("Quản lý Dự án")
 
@@ -28,6 +31,16 @@ if che_do == "Sửa":
     chon_ma = st.selectbox("Chọn mã dự án để sửa", ds_ma)
     doc = collection_du_an.find_one({"ma": chon_ma}, {"_id": 0})
     ten = st.text_input("Tên mới", value=doc.get("ten", ""))
+
+    # Hiển thị danh sách nhân viên đang làm ở dự án
+    id_nv = collection_da_nv.find_one({"id_du_an": chon_ma}, {"_id": 0, "id_nhan_vien": 1})
+    if id_nv and "id_nhan_vien" in id_nv:
+        ds_nv = list(collection_nv.find({"_id": {"$in": id_nv["id_nhan_vien"]}}, {"_id": 0, "ten": 1}))
+        st.markdown("**Nhân viên đang tham gia:**")
+        for nv in ds_nv:
+            st.markdown(f"- {nv['ten']}")
+    else:
+        st.info("Dự án này chưa có nhân viên tham gia.")
 else:
     chon_ma = st.number_input("Mã dự án", min_value=1, step=1)
     ten = st.text_input("Tên dự án")
