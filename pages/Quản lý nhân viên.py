@@ -16,20 +16,24 @@ def XoaNhanVien(ma_nhan_vien_muon_xoa):
     st.success("Đã xóa nhân viên.")
     # st.rerun()
 
-def ThemNhanVienVaDuAnThamGia(du_lieu_nhan_vien, du_lieu_cac_du_an_tham_gia):
+def ThemNhanVienVaDuAnThamGia(du_lieu_nhan_vien, du_lieu_cac_ma_du_an_tham_gia):
     if collection_nhan_vien.find_one({"ma": du_lieu_nhan_vien["ma"]}):
         st.warning("⚠️ Mã nhân viên đã tồn tại. Vui lòng nhập mã khác.")
         return
+    st.write(du_lieu_cac_ma_du_an_tham_gia)
     collection_nhan_vien.insert_one(du_lieu_nhan_vien)
-    du_lieu_du_an = [{"ma_nhan_vien": du_lieu_nhan_vien["ma"], "ma_du_an": ma} for ma in du_lieu_cac_du_an_tham_gia]
-    if du_lieu_du_an:
-        collection_nv_va_du_an.insert_many(du_lieu_du_an)
+    du_lieu_nhan_vien_va_du_an = [{"ma_nhan_vien": du_lieu_nhan_vien["ma"], "ma_du_an": ma_du_an} for ma_du_an in du_lieu_cac_ma_du_an_tham_gia]
+
+    if du_lieu_nhan_vien_va_du_an:
+        collection_nv_va_du_an.insert_many(du_lieu_nhan_vien_va_du_an)
+       
+    # st.write(du_lieu_nhan_vien_va_du_an)
     st.success("✅ Đã thêm nhân viên.")
 
-def SuaNhanVien(du_lieu_nhan_vien, du_lieu_cac_du_an_tham_gia):
+def SuaNhanVien(du_lieu_nhan_vien, du_lieu_cac_ma_du_an_tham_gia):
     collection_nhan_vien.update_one({"ma": du_lieu_nhan_vien["ma"]}, {"$set": du_lieu_nhan_vien})
     collection_nv_va_du_an.delete_many({"ma_nhan_vien": du_lieu_nhan_vien["ma"]})
-    du_lieu_du_an = [{"ma_nhan_vien": du_lieu_nhan_vien["ma"], "ma_du_an": ma} for ma in du_lieu_cac_du_an_tham_gia]
+    du_lieu_du_an = [{"ma_nhan_vien": du_lieu_nhan_vien["ma"], "ma_du_an": ma_du_an} for ma_du_an in du_lieu_cac_ma_du_an_tham_gia]
     if du_lieu_du_an:
         collection_nv_va_du_an.insert_many(du_lieu_du_an)
     st.success("✅ Đã cập nhật nhân viên.")
@@ -53,14 +57,14 @@ def LayNhanVienDF():
                 "from": "nhan_vien_va_du_an",
                 "localField": "ma",
                 "foreignField": "ma_nhan_vien",
-                "as": "du_annh_sach_nhan_vien_va_du_an_tham_gia",
+                "as": "danh_sach_nhan_vien_va_du_an_tham_gia",
             }
         },
         # Nối với bảng du_an để lấy tên
         {
             "$lookup": {
                 "from": "du_an",
-                "localField": "du_annh_sach_nhan_vien_va_du_an_tham_gia.ma_du_an",
+                "localField": "danh_sach_nhan_vien_va_du_an_tham_gia.ma_du_an",
                 "foreignField": "ma",
                 "as": "du_annh_sach_du_an_tham_gia",
             }
@@ -75,8 +79,8 @@ def LayNhanVienDF():
                 "gioi_tinh": 1,
                 "dia_chi": 1,
                 "sdt": 1,
-                "hop_chon_phong_ban": "$phong_ban_truc_thuoc.ten",
-                "du_annh_sach_du_an_tham_gia": "$du_annh_sach_du_an_tham_gia.ten",
+                "phong_ban": "$phong_ban_truc_thuoc.ten",
+                "danh_sach_du_an_tham_gia": "$du_annh_sach_du_an_tham_gia.ten",
             }
         },
     ]
@@ -86,8 +90,8 @@ def LayNhanVienDF():
 
 st.title("Quản lý Nhân viên")
 
-# du_annh sách nhân viên
-st.subheader("📋 du_annh sách nhân viên")
+# Danh sách nhân viên
+st.subheader("📋 Danh sách thông tin nhân viên")
 
 df = LayNhanVienDF()
 st.dataframe(df)
@@ -155,7 +159,7 @@ with st.form("form_nhan_vien"):
             "ma_phong_ban": cac_lua_chon_phong_ban[hop_chon_phong_ban],
         }
         ma_du_an_da_chon = [cac_lua_chon_du_an[ten] for ten in hop_nhieu_lua_chon_du_an]
-
+        st.write(ma_du_an_da_chon)
         if che_do_chon == "Thêm":
             ThemNhanVienVaDuAnThamGia(du_lieu_nv, ma_du_an_da_chon)
         else:
