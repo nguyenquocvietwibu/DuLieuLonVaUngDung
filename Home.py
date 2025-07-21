@@ -13,10 +13,10 @@ db = client["emp"]
 
 # Danh sách các collection cần hiển thị
 collections = {
-    "Nhân viên": "nhan_vien",
-    "Dự án": "du_an",
-    "Phòng ban": "phong_ban",
-    "Nhân viên và dự án": "nhan_vien_va_du_an"
+    "Nhân viên---Nguyễn Quốc Việt---": "nhan_vien",
+    "Dự án---Phạm Hữu Thành---": "du_an",
+    "Phòng ban---Nguyễn Đắc Huy Hoàng---": "phong_ban",
+    "Nhân viên và dự án---": "nhan_vien_va_du_an"
 }
 
 # Hiển thị từng collection trong expander
