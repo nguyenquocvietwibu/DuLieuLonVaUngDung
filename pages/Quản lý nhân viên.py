@@ -79,8 +79,8 @@ def LayNhanVienDF():
                 "gioi_tinh": 1,
                 "dia_chi": 1,
                 "sdt": 1,
-                "hop_chon_phong_ban": "$phong_ban_truc_thuoc.ten",
-                "du_annh_sach_du_an_tham_gia": "$du_annh_sach_du_an_tham_gia.ten",
+                "phong_ban": "$phong_ban_truc_thuoc.ten",
+                "danh_sach_du_an_tham_gia": "$du_annh_sach_du_an_tham_gia.ten",
             }
         },
     ]
